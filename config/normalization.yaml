@@ -1,0 +1,15 @@
+summary:
+  max_chars: 240
+  strip_html: true
+raw_excerpt:
+  max_chars: 280
+fingerprint:
+  algorithm: sha256
+published_at:
+  allow_inferred: true
+severity_defaults:
+  docs_update: low
+  bugfix: low
+  release: medium
+  deprecation: high
+  breaking_change: high

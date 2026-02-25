@@ -1,0 +1,12 @@
+[
+  {
+    "source_id": "meta_graph_api",
+    "platform": "meta",
+    "surface": "api",
+    "title": "Graph API 2026 changes",
+    "canonical_url": "https://developers.facebook.com/docs/graph-api/changelog/v20",
+    "published_at": "2026-01-01T00:00:00.000Z",
+    "summary": "Versioning and webhook updates.",
+    "raw_excerpt": "Graph API 2026 changes Versioning and webhook updates."
+  }
+]

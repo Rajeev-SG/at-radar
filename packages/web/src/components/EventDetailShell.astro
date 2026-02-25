@@ -1,0 +1,53 @@
+---
+import { apiBase } from '../lib/api';
+const api = apiBase();
+---
+<section class="panel split fade-in">
+  <div class="grid">
+    <div>
+      <h2 style="margin:0">Event Detail</h2>
+      <p class="muted" style="margin:.35rem 0 0">Event metadata, diff preview, and artifact headers.</p>
+    </div>
+    <article id="detail" class="card"><p class="muted">Loading event...</p></article>
+  </div>
+  <aside class="panel">
+    <h3 style="margin-top:0">Feeds</h3>
+    <div class="stat-list">
+      <div class="stat"><span>RSS</span><a href={`${api}/api/feeds/rss`} target="_blank" rel="noreferrer">Open</a></div>
+      <div class="stat"><span>JSON Feed</span><a href={`${api}/api/feeds/json`} target="_blank" rel="noreferrer">Open</a></div>
+    </div>
+  </aside>
+</section>
+<script is:inline define:vars={{ api }}>
+  const params = new URLSearchParams(location.search);
+  const id = params.get('id');
+  const detail = document.getElementById('detail');
+  if (!id) {
+    detail.innerHTML = '<p class="muted">No event id provided.</p>';
+  } else {
+    fetch(`${api}/api/events/${encodeURIComponent(id)}`)
+      .then(r => r.ok ? r.json() : Promise.reject(new Error('not_found')))
+      .then(event => {
+        const diff = event.diff?.patch ? `<h4>Diff</h4><pre class="diff">${event.diff.patch.replace(/</g,'&lt;')}</pre>` : '';
+        const artifact = event.artifact ? `
+          <h4>Artifact</h4>
+          <div class="stat-list">
+            <div class="stat"><span>Fetched</span><span>${event.artifact.fetched_at}</span></div>
+            <div class="stat"><span>ETag</span><span>${event.artifact.etag || 'n/a'}</span></div>
+            <div class="stat"><span>Last-Modified</span><span>${event.artifact.last_modified || 'n/a'}</span></div>
+            <div class="stat"><span>Status</span><span>${event.artifact.status_code}</span></div>
+          </div>` : '';
+        detail.innerHTML = `
+          <div class="meta"><span>${new Date(event.published_at).toLocaleString()}</span><span>${event.platform}</span><span>${event.event_type}</span></div>
+          <h3 class="title">${event.title}</h3>
+          <p>${event.summary}</p>
+          <p><a href="${event.canonical_url}" target="_blank" rel="noreferrer">Open canonical source</a></p>
+          <div class="tags">${(event.labels || []).map(t => `<span class="tag">${t}</span>`).join('')}</div>
+          ${diff}
+          ${artifact}`;
+      })
+      .catch(() => {
+        detail.innerHTML = '<p class="muted">Event not found.</p>';
+      });
+  }
+</script>

@@ -1,0 +1,9 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PlatformShell from '../../components/PlatformShell.astro';
+import { getUiConfig } from '../../lib/config';
+const ui = getUiConfig();
+---
+<BaseLayout title="Platforms | AdTech Change Radar" ui={ui}>
+  <PlatformShell />
+</BaseLayout>

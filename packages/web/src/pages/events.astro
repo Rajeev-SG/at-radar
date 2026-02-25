@@ -1,0 +1,9 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import EventDetailShell from '../components/EventDetailShell.astro';
+import { getUiConfig } from '../lib/config';
+const ui = getUiConfig();
+---
+<BaseLayout title="Event Detail | AdTech Change Radar" ui={ui}>
+  <EventDetailShell />
+</BaseLayout>

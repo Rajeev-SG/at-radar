@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": ["tags", "rules"],
+  "properties": {
+    "tags": { "type": "array", "items": { "type": "string" } },
+    "rules": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["pattern"],
+        "properties": {
+          "pattern": { "type": "string" },
+          "add_tags": { "type": "array", "items": { "type": "string" } },
+          "severity": { "type": "string", "enum": ["low", "medium", "high"] },
+          "event_type": { "type": "string" }
+        },
+        "additionalProperties": true
+      }
+    },
+    "platform_rules": { "type": "object", "additionalProperties": { "type": "array" } }
+  },
+  "additionalProperties": false
+}

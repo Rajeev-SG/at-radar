@@ -1,0 +1,16 @@
+source_id: tiktok_changelog
+platform: tiktok
+surface: api
+strategy: html_list
+request:
+  url: https://developers.tiktok.com/doc/changelog
+parse:
+  list_selector: main h2, main h3, [data-testid="content"] h2
+  link_selector: a
+  date_regex: '(?i)(January|February|March|April|May|June|July|August|September|October|November|December)\\s+\\d{1,2},\\s+\\d{4}'
+rate_limit:
+  min_seconds_between_fetches: 3600
+  max_items_per_run: 20
+cursor:
+  type: published_at
+tags: [versioning]

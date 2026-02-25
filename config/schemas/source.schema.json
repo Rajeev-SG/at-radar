@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Source Config",
+  "type": "object",
+  "required": ["source_id", "platform", "surface", "strategy", "request", "parse", "rate_limit", "cursor", "tags"],
+  "properties": {
+    "source_id": { "type": "string", "minLength": 1 },
+    "platform": { "type": "string", "minLength": 1 },
+    "surface": { "type": "string", "enum": ["api", "ui", "docs", "policy", "status"] },
+    "strategy": { "type": "string", "enum": ["rss", "html_list", "html_fingerprint", "json_feed"] },
+    "request": {
+      "type": "object",
+      "required": ["url"],
+      "properties": {
+        "url": { "type": "string", "minLength": 1 },
+        "headers": { "type": "object", "additionalProperties": { "type": "string" } },
+        "params": { "type": "object", "additionalProperties": true },
+        "targets": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["id", "url"],
+            "properties": {
+              "id": { "type": "string" },
+              "url": { "type": "string" },
+              "label": { "type": "string" }
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "parse": { "type": "object", "additionalProperties": true },
+    "rate_limit": {
+      "type": "object",
+      "required": ["min_seconds_between_fetches", "max_items_per_run"],
+      "properties": {
+        "min_seconds_between_fetches": { "type": "integer", "minimum": 0 },
+        "max_items_per_run": { "type": "integer", "minimum": 1 }
+      },
+      "additionalProperties": false
+    },
+    "cursor": {
+      "type": "object",
+      "required": ["type"],
+      "properties": {
+        "type": { "type": "string", "enum": ["published_at", "etag_last_modified", "content_hash"] }
+      },
+      "additionalProperties": false
+    },
+    "tags": { "type": "array", "items": { "type": "string" } },
+    "rules": { "type": "array", "items": { "type": "object", "additionalProperties": true } }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,13 @@
+node_modules
+.dist
+coverage
+.playwright
+.env
+.env.local
+.wrangler
+.DS_Store
+packages/*/dist
+packages/*/.astro
+packages/*/.wrangler
+packages/*/playwright-report
+packages/*/test-results

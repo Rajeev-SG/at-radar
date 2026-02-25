@@ -1,0 +1,122 @@
+---
+import { apiBase } from '../lib/api';
+const api = apiBase();
+const preset = Astro.url.searchParams.get('preset') ?? '';
+---
+<section class="panel grid fade-in">
+  <div>
+    <h2 style="margin:0">Timeline</h2>
+    <p class="muted" style="margin:0.35rem 0 0">Search, filter, and open normalized platform change events.</p>
+  </div>
+  <div class="toolbar" id="filters">
+    <label>Search
+      <input id="q" type="search" placeholder="deprecation, v23, attribution" />
+    </label>
+    <label>Platform
+      <select id="platform"><option value="">All</option></select>
+    </label>
+    <label>Tag
+      <select id="tag"><option value="">All</option></select>
+    </label>
+    <label>Type
+      <select id="event_type">
+        <option value="">All</option>
+        <option value="release">Release</option>
+        <option value="deprecation">Deprecation</option>
+        <option value="breaking_change">Breaking</option>
+        <option value="docs_update">Docs Update</option>
+      </select>
+    </label>
+    <label>Severity
+      <select id="severity">
+        <option value="">All</option>
+        <option value="high">High</option>
+        <option value="medium">Medium</option>
+        <option value="low">Low</option>
+      </select>
+    </label>
+    <div style="display:flex;gap:.5rem;align-items:end">
+      <button id="apply">Apply</button>
+      <button class="secondary" id="reset" type="button">Reset</button>
+    </div>
+  </div>
+  <div id="results" class="cards" aria-live="polite"></div>
+  <div style="display:flex;gap:.5rem;justify-content:flex-end">
+    <button id="more" class="secondary" type="button">Load more</button>
+  </div>
+</section>
+<script is:inline define:vars={{ api, preset }}>
+  const state = { cursor: null, items: [] };
+  const $ = (id) => document.getElementById(id);
+  const resultsEl = $('results');
+  const moreBtn = $('more');
+  const qs = new URLSearchParams(location.search);
+
+  async function loadOptions() {
+    const [platforms, tags] = await Promise.all([
+      fetch(`${api}/api/platforms`).then(r => r.json()),
+      fetch(`${api}/api/tags`).then(r => r.json())
+    ]);
+    for (const item of platforms.items || []) {
+      $('platform').insertAdjacentHTML('beforeend', `<option value="${item.platform}">${item.platform}</option>`);
+    }
+    for (const item of tags.items || []) {
+      $('tag').insertAdjacentHTML('beforeend', `<option value="${item.tag}">${item.tag}</option>`);
+    }
+  }
+
+  function render(reset = false) {
+    if (reset) resultsEl.innerHTML = '';
+    if (!state.items.length) {
+      resultsEl.innerHTML = '<div class="card">No events found.</div>';
+      return;
+    }
+    resultsEl.innerHTML = state.items.map(item => `
+      <article class="card">
+        <div class="meta"><span>${new Date(item.published_at).toLocaleString()}</span><span>${item.platform}</span><span>${item.event_type}</span></div>
+        <h3 class="title"><a href="/events?id=${encodeURIComponent(item.event_id)}">${item.title}</a></h3>
+        <p style="margin:0">${item.summary}</p>
+        <div class="tags">${(item.labels || []).map(t => `<span class="tag">${t}</span>`).join('')} ${item.severity ? `<span class="tag sev-${item.severity}">${item.severity}</span>` : ''}</div>
+      </article>`).join('');
+  }
+
+  function applyPreset() {
+    if (preset === 'breaking_90d') $('severity').value = 'high';
+    if (preset === 'docs_week') $('event_type').value = 'docs_update';
+    if (qs.get('tag')) $('tag').value = qs.get('tag');
+    if (qs.get('platform')) $('platform').value = qs.get('platform');
+  }
+
+  async function fetchEvents(append = false) {
+    const params = new URLSearchParams();
+    for (const id of ['q', 'platform', 'tag', 'event_type', 'severity']) {
+      const value = $(id).value?.trim();
+      if (value) params.set(id, value);
+    }
+    params.set('limit', '5');
+    if (append && state.cursor) params.set('cursor', state.cursor);
+    const res = await fetch(`${api}/api/events?${params}`);
+    const data = await res.json();
+    state.cursor = data.next_cursor;
+    state.items = append ? [...state.items, ...data.items] : data.items;
+    render(!append);
+    moreBtn.disabled = !state.cursor;
+  }
+
+  $('apply').addEventListener('click', () => fetchEvents(false));
+  $('reset').addEventListener('click', () => {
+    for (const id of ['q', 'platform', 'tag', 'event_type', 'severity']) $(id).value = '';
+    fetchEvents(false);
+  });
+  moreBtn.addEventListener('click', () => fetchEvents(true));
+
+  loadOptions()
+    .then(() => {
+      applyPreset();
+      return fetchEvents(false);
+    })
+    .catch((error) => {
+      console.error(error);
+      resultsEl.innerHTML = '<div class=\"card\">Failed to load events.</div>';
+    });
+</script>

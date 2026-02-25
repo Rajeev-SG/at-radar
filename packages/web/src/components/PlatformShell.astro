@@ -1,0 +1,43 @@
+---
+import { apiBase } from '../lib/api';
+const api = apiBase();
+---
+<section class="panel grid fade-in">
+  <div>
+    <h2 style="margin:0">Platforms</h2>
+    <p class="muted" style="margin:.35rem 0 0">Latest changes grouped by platform.</p>
+  </div>
+  <div class="split">
+    <div class="panel">
+      <h3 style="margin-top:0">Platform Counts</h3>
+      <div id="platforms" class="stat-list"></div>
+    </div>
+    <div class="panel">
+      <h3 style="margin-top:0">Latest For Selected Platform</h3>
+      <label style="display:grid;gap:.35rem;font-weight:600;color:var(--muted)">Platform
+        <select id="platform-select"><option value="">Choose</option></select>
+      </label>
+      <div id="platform-events" class="cards" style="margin-top:.75rem"></div>
+    </div>
+  </div>
+</section>
+<script is:inline define:vars={{ api }}>
+  const platformsEl = document.getElementById('platforms');
+  const selectEl = document.getElementById('platform-select');
+  const eventsEl = document.getElementById('platform-events');
+  fetch(`${api}/api/platforms`).then(r => r.json()).then(async data => {
+    platformsEl.innerHTML = (data.items || []).map(p => `<div class="stat"><span>${p.platform}</span><span>${p.count}</span></div>`).join('');
+    for (const p of (data.items || [])) {
+      selectEl.insertAdjacentHTML('beforeend', `<option value="${p.platform}">${p.platform}</option>`);
+    }
+    if (data.items?.[0]) {
+      selectEl.value = data.items[0].platform;
+      await loadPlatform(data.items[0].platform);
+    }
+  });
+  async function loadPlatform(platform) {
+    const data = await fetch(`${api}/api/events?platform=${encodeURIComponent(platform)}&limit=5`).then(r => r.json());
+    eventsEl.innerHTML = (data.items || []).map(item => `<article class="card"><div class="meta"><span>${item.event_type}</span><span>${new Date(item.published_at).toLocaleDateString()}</span></div><h4 class="title" style="font-size:1rem"><a href="/events?id=${encodeURIComponent(item.event_id)}">${item.title}</a></h4></article>`).join('') || '<div class="card">No events.</div>';
+  }
+  selectEl.addEventListener('change', () => { if (selectEl.value) loadPlatform(selectEl.value); });
+</script>

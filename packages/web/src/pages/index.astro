@@ -1,0 +1,9 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import TimelineShell from '../components/TimelineShell.astro';
+import { getUiConfig } from '../lib/config';
+const ui = getUiConfig();
+---
+<BaseLayout title="AdTech Change Radar" ui={ui}>
+  <TimelineShell />
+</BaseLayout>

@@ -1,0 +1,22 @@
+source_id: google_ads_blog
+platform: google_ads
+surface: api
+strategy: rss
+request:
+  url: https://ads-developers.googleblog.com/feeds/posts/default?alt=atom&max-results=50
+parse:
+  item_selector: entry
+  mappings:
+    title: title
+    link: link[rel=alternate]@href
+    date: published
+    summary: summary
+  include_title_regex: '(?i)google ads api'
+  exclude_title_regex: '(?i)(mobile ads sdk|admob|ad manager|ima sdk|campaign manager 360|display & video 360)'
+  exclude_summary_regex: '(?i)^\\[object Object\\]$'
+rate_limit:
+  min_seconds_between_fetches: 1800
+  max_items_per_run: 15
+cursor:
+  type: published_at
+tags: [versioning]

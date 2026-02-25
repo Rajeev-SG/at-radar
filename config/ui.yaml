@@ -1,0 +1,37 @@
+brand:
+  title: AdTech Change Radar
+  subtitle: Release notes, deprecations, and docs updates across major ad platforms
+pages:
+  - id: timeline
+    label: Timeline
+    path: /
+    type: timeline
+    description: All changes with filters and search
+  - id: platforms
+    label: Platforms
+    path: /platform
+    type: platform_index
+    description: Latest changes by platform
+  - id: tags
+    label: Tags
+    path: /tags
+    type: tag_index
+    description: Browse by change labels
+  - id: breaking_90d
+    label: Breaking 90d
+    path: /?preset=breaking_90d
+    type: preset
+    filters:
+      severity: high
+  - id: docs_week
+    label: Docs This Week
+    path: /?preset=docs_week
+    type: preset
+    filters:
+      event_type: docs_update
+  - id: privacy
+    label: Privacy / Consent
+    path: /tags/privacy
+    type: tag
+    filters:
+      tag: privacy

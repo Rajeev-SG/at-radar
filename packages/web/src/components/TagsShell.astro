@@ -1,0 +1,39 @@
+---
+import { apiBase } from '../lib/api';
+const api = apiBase();
+---
+<section class="panel split fade-in">
+  <div class="panel">
+    <h2 style="margin-top:0">Tags</h2>
+    <div id="tags" class="stat-list"></div>
+  </div>
+  <div class="panel">
+    <h3 style="margin-top:0">Tag Events</h3>
+    <label style="display:grid;gap:.35rem;font-weight:600;color:var(--muted)">Tag
+      <select id="tag-select"><option value="">Choose</option></select>
+    </label>
+    <div id="tag-events" class="cards" style="margin-top:.75rem"></div>
+  </div>
+</section>
+<script is:inline define:vars={{ api }}>
+  const tagsEl = document.getElementById('tags');
+  const selectEl = document.getElementById('tag-select');
+  const eventsEl = document.getElementById('tag-events');
+  const selectedFromUrl = new URLSearchParams(location.search).get('tag');
+  fetch(`${api}/api/tags`).then(r => r.json()).then(async data => {
+    tagsEl.innerHTML = (data.items || []).map(t => `<div class="stat"><span>${t.tag}</span><span>${t.count}</span></div>`).join('');
+    for (const t of (data.items || [])) {
+      selectEl.insertAdjacentHTML('beforeend', `<option value="${t.tag}">${t.tag}</option>`);
+    }
+    const initial = selectedFromUrl || data.items?.[0]?.tag;
+    if (initial) {
+      selectEl.value = initial;
+      await loadTag(initial);
+    }
+  });
+  async function loadTag(tag) {
+    const data = await fetch(`${api}/api/events?tag=${encodeURIComponent(tag)}&limit=10`).then(r => r.json());
+    eventsEl.innerHTML = (data.items || []).map(item => `<article class="card"><div class="meta"><span>${item.platform}</span><span>${item.event_type}</span></div><h4 class="title" style="font-size:1rem"><a href="/events?id=${encodeURIComponent(item.event_id)}">${item.title}</a></h4><p style="margin:0">${item.summary}</p></article>`).join('') || '<div class="card">No events.</div>';
+  }
+  selectEl.addEventListener('change', () => { if (selectEl.value) loadTag(selectEl.value); });
+</script>

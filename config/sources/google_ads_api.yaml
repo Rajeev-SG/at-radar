@@ -1,0 +1,18 @@
+source_id: google_ads_api
+platform: google_ads
+surface: api
+strategy: html_list
+request:
+  url: https://developers.google.com/google-ads/api/docs/release-notes
+parse:
+  list_selector: main h2
+  link_selector: a
+  date_regex: '(?i)((January|February|March|April|May|June|July|August|September|October|November|December)\\s+\\d{1,2},\\s+\\d{4}|\\d{4}-\\d{2}-\\d{2})'
+  exclude_title_regex: '(?i)^page summary$|^archived release notes$|^key takeaways$'
+  include_context_regex: '(?i)(\\bv\\d+\\b|20\\d{2})'
+rate_limit:
+  min_seconds_between_fetches: 3600
+  max_items_per_run: 10
+cursor:
+  type: published_at
+tags: [versioning, reporting]

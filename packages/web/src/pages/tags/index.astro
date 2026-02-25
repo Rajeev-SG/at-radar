@@ -1,0 +1,9 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import TagsShell from '../../components/TagsShell.astro';
+import { getUiConfig } from '../../lib/config';
+const ui = getUiConfig();
+---
+<BaseLayout title="Tags | AdTech Change Radar" ui={ui}>
+  <TagsShell />
+</BaseLayout>

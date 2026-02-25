@@ -1,0 +1,14 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import TagsShell from '../../components/TagsShell.astro';
+import { getTaxonomyTags, getUiConfig } from '../../lib/config';
+
+export function getStaticPaths() {
+  return getTaxonomyTags().map((tag) => ({ params: { tag } }));
+}
+
+const ui = getUiConfig();
+---
+<BaseLayout title="Tag | AdTech Change Radar" ui={ui}>
+  <TagsShell />
+</BaseLayout>

@@ -1,0 +1,22 @@
+[
+  {
+    "source_id": "google_ads_api",
+    "platform": "google_ads",
+    "surface": "api",
+    "title": "January 15, 2026 - Google Ads API v23 release",
+    "canonical_url": "https://developers.google.com/google-ads/api/docs/release-notes#v23",
+    "published_at": "2026-01-15T00:00:00.000Z",
+    "summary": "Reporting updates and measurement enhancements.",
+    "raw_excerpt": "January 15, 2026 - Google Ads API v23 release Reporting updates and measurement enhancements."
+  },
+  {
+    "source_id": "google_ads_api",
+    "platform": "google_ads",
+    "surface": "api",
+    "title": "December 10, 2025 - v22.1 patch",
+    "canonical_url": "https://developers.google.com/google-ads/api/docs/release-notes#v22_1",
+    "published_at": "2025-12-10T00:00:00.000Z",
+    "summary": "Bugfixes for asset group metrics.",
+    "raw_excerpt": "December 10, 2025 - v22.1 patch Bugfixes for asset group metrics."
+  }
+]

@@ -1,0 +1,39 @@
+source_id: docs_monitors
+platform: google_ads
+surface: docs
+strategy: html_fingerprint
+request:
+  url: https://developers.google.com/google-ads/api/docs/start
+  targets:
+    - id: google_ads_overview
+      label: Google Ads API Getting Started
+      url: https://developers.google.com/google-ads/api/docs/start
+    - id: google_ads_auth
+      label: Google Ads API OAuth Overview
+      url: https://developers.google.com/google-ads/api/docs/oauth/overview
+    - id: google_ads_client_libs
+      label: Google Ads API Client Libraries
+      url: https://developers.google.com/google-ads/api/docs/client-libs
+parse:
+  content_selector: main
+  ignore_selectors:
+    - script
+    - style
+    - nav
+    - footer
+    - devsite-actions
+    - devsite-feature-tooltip
+    - noscript
+    - .hide-from-toc
+    - '#key-takeaways-panel-title'
+  reject_content_regex:
+    - '(?i)update your browser'
+    - '(?i)requireLazy\\('
+    - '(?i)window\\.ue_'
+    - '(?i)^var\\s+ue_t0'
+rate_limit:
+  min_seconds_between_fetches: 21600
+  max_items_per_run: 3
+cursor:
+  type: content_hash
+tags: [versioning, docs]

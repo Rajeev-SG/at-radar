@@ -1,0 +1,410 @@
+{
+  "sources": [
+    {
+      "source_id": "amazon_ads_deprecations",
+      "platform": "amazon_ads",
+      "surface": "api",
+      "strategy": "html_list",
+      "request": {
+        "url": "https://advertising.amazon.com/API/docs/en-us/release-notes/deprecations"
+      },
+      "parse": {
+        "list_selector": "main h2, main h3",
+        "link_selector": "a",
+        "date_regex": "(?i)((January|February|March|April|May|June|July|August|September|October|November|December)\\\\s+\\\\d{4}|20\\\\d{2})"
+      },
+      "rate_limit": {
+        "min_seconds_between_fetches": 3600,
+        "max_items_per_run": 20
+      },
+      "cursor": {
+        "type": "published_at"
+      },
+      "tags": [
+        "deprecation",
+        "versioning"
+      ],
+      "rules": [
+        {
+          "pattern": "(?i)deprecat|legacy",
+          "event_type": "deprecation",
+          "severity": "high"
+        }
+      ]
+    },
+    {
+      "source_id": "amazon_ads_release_notes",
+      "platform": "amazon_ads",
+      "surface": "api",
+      "strategy": "html_list",
+      "request": {
+        "url": "https://advertising.amazon.com/API/docs/en-us/release-notes/ads-api"
+      },
+      "parse": {
+        "list_selector": "main h2, main h3",
+        "link_selector": "a",
+        "date_regex": "(?i)((January|February|March|April|May|June|July|August|September|October|November|December)\\\\s+\\\\d{4}|20\\\\d{2})"
+      },
+      "rate_limit": {
+        "min_seconds_between_fetches": 3600,
+        "max_items_per_run": 20
+      },
+      "cursor": {
+        "type": "published_at"
+      },
+      "tags": [
+        "versioning",
+        "reporting"
+      ]
+    },
+    {
+      "source_id": "docs_monitors",
+      "platform": "google_ads",
+      "surface": "docs",
+      "strategy": "html_fingerprint",
+      "request": {
+        "url": "https://developers.google.com/google-ads/api/docs/start",
+        "targets": [
+          {
+            "id": "google_ads_overview",
+            "label": "Google Ads API Getting Started",
+            "url": "https://developers.google.com/google-ads/api/docs/start"
+          },
+          {
+            "id": "google_ads_auth",
+            "label": "Google Ads API OAuth Overview",
+            "url": "https://developers.google.com/google-ads/api/docs/oauth/overview"
+          },
+          {
+            "id": "google_ads_client_libs",
+            "label": "Google Ads API Client Libraries",
+            "url": "https://developers.google.com/google-ads/api/docs/client-libs"
+          }
+        ]
+      },
+      "parse": {
+        "content_selector": "main",
+        "ignore_selectors": [
+          "script",
+          "style",
+          "nav",
+          "footer",
+          "devsite-actions",
+          "devsite-feature-tooltip",
+          "noscript",
+          ".hide-from-toc",
+          "#key-takeaways-panel-title"
+        ],
+        "reject_content_regex": [
+          "(?i)update your browser",
+          "(?i)requireLazy\\\\(",
+          "(?i)window\\\\.ue_",
+          "(?i)^var\\\\s+ue_t0"
+        ]
+      },
+      "rate_limit": {
+        "min_seconds_between_fetches": 21600,
+        "max_items_per_run": 3
+      },
+      "cursor": {
+        "type": "content_hash"
+      },
+      "tags": [
+        "versioning",
+        "docs"
+      ]
+    },
+    {
+      "source_id": "google_ads_api",
+      "platform": "google_ads",
+      "surface": "api",
+      "strategy": "html_list",
+      "request": {
+        "url": "https://developers.google.com/google-ads/api/docs/release-notes"
+      },
+      "parse": {
+        "list_selector": "main h2",
+        "link_selector": "a",
+        "date_regex": "(?i)((January|February|March|April|May|June|July|August|September|October|November|December)\\\\s+\\\\d{1,2},\\\\s+\\\\d{4}|\\\\d{4}-\\\\d{2}-\\\\d{2})",
+        "exclude_title_regex": "(?i)^page summary$|^archived release notes$|^key takeaways$",
+        "include_context_regex": "(?i)(\\\\bv\\\\d+\\\\b|20\\\\d{2})"
+      },
+      "rate_limit": {
+        "min_seconds_between_fetches": 3600,
+        "max_items_per_run": 10
+      },
+      "cursor": {
+        "type": "published_at"
+      },
+      "tags": [
+        "versioning",
+        "reporting"
+      ]
+    },
+    {
+      "source_id": "google_ads_blog",
+      "platform": "google_ads",
+      "surface": "api",
+      "strategy": "rss",
+      "request": {
+        "url": "https://ads-developers.googleblog.com/feeds/posts/default?alt=atom&max-results=50"
+      },
+      "parse": {
+        "item_selector": "entry",
+        "mappings": {
+          "title": "title",
+          "link": "link[rel=alternate]@href",
+          "date": "published",
+          "summary": "summary"
+        },
+        "include_title_regex": "(?i)google ads api",
+        "exclude_title_regex": "(?i)(mobile ads sdk|admob|ad manager|ima sdk|campaign manager 360|display & video 360)",
+        "exclude_summary_regex": "(?i)^\\\\[object Object\\\\]$"
+      },
+      "rate_limit": {
+        "min_seconds_between_fetches": 1800,
+        "max_items_per_run": 15
+      },
+      "cursor": {
+        "type": "published_at"
+      },
+      "tags": [
+        "versioning"
+      ]
+    },
+    {
+      "source_id": "meta_graph_api",
+      "platform": "meta",
+      "surface": "api",
+      "strategy": "html_list",
+      "request": {
+        "url": "https://developers.facebook.com/docs/graph-api/changelog/"
+      },
+      "parse": {
+        "list_selector": "main h2, main h3",
+        "link_selector": "a",
+        "date_regex": "(?i)(20\\\\d{2})"
+      },
+      "rate_limit": {
+        "min_seconds_between_fetches": 3600,
+        "max_items_per_run": 20
+      },
+      "cursor": {
+        "type": "published_at"
+      },
+      "tags": [
+        "versioning"
+      ]
+    },
+    {
+      "source_id": "meta_marketing_api",
+      "platform": "meta",
+      "surface": "api",
+      "strategy": "html_list",
+      "request": {
+        "url": "https://developers.facebook.com/docs/marketing-api/marketing-api-changelog/"
+      },
+      "parse": {
+        "list_selector": "main h2, main h3",
+        "link_selector": "a",
+        "date_regex": "(?i)(20\\\\d{2})"
+      },
+      "rate_limit": {
+        "min_seconds_between_fetches": 3600,
+        "max_items_per_run": 20
+      },
+      "cursor": {
+        "type": "published_at"
+      },
+      "tags": [
+        "versioning",
+        "deprecation"
+      ]
+    },
+    {
+      "source_id": "tiktok_changelog",
+      "platform": "tiktok",
+      "surface": "api",
+      "strategy": "html_list",
+      "request": {
+        "url": "https://developers.tiktok.com/doc/changelog"
+      },
+      "parse": {
+        "list_selector": "main h2, main h3, [data-testid=\"content\"] h2",
+        "link_selector": "a",
+        "date_regex": "(?i)(January|February|March|April|May|June|July|August|September|October|November|December)\\\\s+\\\\d{1,2},\\\\s+\\\\d{4}"
+      },
+      "rate_limit": {
+        "min_seconds_between_fetches": 3600,
+        "max_items_per_run": 20
+      },
+      "cursor": {
+        "type": "published_at"
+      },
+      "tags": [
+        "versioning"
+      ]
+    }
+  ],
+  "taxonomy": {
+    "tags": [
+      "privacy",
+      "measurement",
+      "attribution",
+      "audiences",
+      "creative",
+      "reporting",
+      "deprecation",
+      "versioning",
+      "auth",
+      "webhook"
+    ],
+    "rules": [
+      {
+        "pattern": "(?i)deprecat|sunset|end of life|legacy",
+        "add_tags": [
+          "deprecation"
+        ],
+        "severity": "high",
+        "event_type": "deprecation"
+      },
+      {
+        "pattern": "(?i)breaking|must upgrade|required action",
+        "severity": "high",
+        "event_type": "breaking_change"
+      },
+      {
+        "pattern": "(?i)privacy|consent|gdpr|ccpa",
+        "add_tags": [
+          "privacy"
+        ]
+      },
+      {
+        "pattern": "(?i)measurement|conversion|pixel|event",
+        "add_tags": [
+          "measurement"
+        ]
+      },
+      {
+        "pattern": "(?i)attribution",
+        "add_tags": [
+          "attribution"
+        ]
+      },
+      {
+        "pattern": "(?i)audience|segment",
+        "add_tags": [
+          "audiences"
+        ]
+      },
+      {
+        "pattern": "(?i)creative|ad format|asset",
+        "add_tags": [
+          "creative"
+        ]
+      },
+      {
+        "pattern": "(?i)report|reporting|metrics",
+        "add_tags": [
+          "reporting"
+        ]
+      }
+    ],
+    "platform_rules": {
+      "google_ads": [
+        {
+          "pattern": "(?i)v[0-9]+",
+          "add_tags": [
+            "versioning"
+          ]
+        }
+      ],
+      "meta": [
+        {
+          "pattern": "(?i)graph api|marketing api",
+          "add_tags": [
+            "versioning"
+          ]
+        }
+      ]
+    }
+  },
+  "normalization": {
+    "summary": {
+      "max_chars": 240,
+      "strip_html": true
+    },
+    "raw_excerpt": {
+      "max_chars": 280
+    },
+    "fingerprint": {
+      "algorithm": "sha256"
+    },
+    "published_at": {
+      "allow_inferred": true
+    },
+    "severity_defaults": {
+      "docs_update": "low",
+      "bugfix": "low",
+      "release": "medium",
+      "deprecation": "high",
+      "breaking_change": "high"
+    }
+  },
+  "ui": {
+    "brand": {
+      "title": "AdTech Change Radar",
+      "subtitle": "Release notes, deprecations, and docs updates across major ad platforms"
+    },
+    "pages": [
+      {
+        "id": "timeline",
+        "label": "Timeline",
+        "path": "/",
+        "type": "timeline",
+        "description": "All changes with filters and search"
+      },
+      {
+        "id": "platforms",
+        "label": "Platforms",
+        "path": "/platform",
+        "type": "platform_index",
+        "description": "Latest changes by platform"
+      },
+      {
+        "id": "tags",
+        "label": "Tags",
+        "path": "/tags",
+        "type": "tag_index",
+        "description": "Browse by change labels"
+      },
+      {
+        "id": "breaking_90d",
+        "label": "Breaking 90d",
+        "path": "/?preset=breaking_90d",
+        "type": "preset",
+        "filters": {
+          "severity": "high"
+        }
+      },
+      {
+        "id": "docs_week",
+        "label": "Docs This Week",
+        "path": "/?preset=docs_week",
+        "type": "preset",
+        "filters": {
+          "event_type": "docs_update"
+        }
+      },
+      {
+        "id": "privacy",
+        "label": "Privacy / Consent",
+        "path": "/tags/privacy",
+        "type": "tag",
+        "filters": {
+          "tag": "privacy"
+        }
+      }
+    ]
+  }
+}

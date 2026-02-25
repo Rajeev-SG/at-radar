@@ -1,0 +1,22 @@
+[
+  {
+    "source_id": "meta_marketing_api",
+    "platform": "meta",
+    "surface": "api",
+    "title": "Marketing API 2026 version updates",
+    "canonical_url": "https://developers.facebook.com/docs/marketing-api/changelog/version-20",
+    "published_at": "2026-01-01T00:00:00.000Z",
+    "summary": "Deprecation notices and required action for older endpoints.",
+    "raw_excerpt": "Marketing API 2026 version updates Deprecation notices and required action for older endpoints."
+  },
+  {
+    "source_id": "meta_marketing_api",
+    "platform": "meta",
+    "surface": "api",
+    "title": "Marketing API 2025 recap",
+    "canonical_url": "https://developers.facebook.com/docs/marketing-api/changelog/version-19",
+    "published_at": "2025-01-01T00:00:00.000Z",
+    "summary": "Feature changes and bugfixes.",
+    "raw_excerpt": "Marketing API 2025 recap Feature changes and bugfixes."
+  }
+]

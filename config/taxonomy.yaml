@@ -1,0 +1,38 @@
+tags:
+  - privacy
+  - measurement
+  - attribution
+  - audiences
+  - creative
+  - reporting
+  - deprecation
+  - versioning
+  - auth
+  - webhook
+rules:
+  - pattern: '(?i)deprecat|sunset|end of life|legacy'
+    add_tags: [deprecation]
+    severity: high
+    event_type: deprecation
+  - pattern: '(?i)breaking|must upgrade|required action'
+    severity: high
+    event_type: breaking_change
+  - pattern: '(?i)privacy|consent|gdpr|ccpa'
+    add_tags: [privacy]
+  - pattern: '(?i)measurement|conversion|pixel|event'
+    add_tags: [measurement]
+  - pattern: '(?i)attribution'
+    add_tags: [attribution]
+  - pattern: '(?i)audience|segment'
+    add_tags: [audiences]
+  - pattern: '(?i)creative|ad format|asset'
+    add_tags: [creative]
+  - pattern: '(?i)report|reporting|metrics'
+    add_tags: [reporting]
+platform_rules:
+  google_ads:
+    - pattern: '(?i)v[0-9]+'
+      add_tags: [versioning]
+  meta:
+    - pattern: '(?i)graph api|marketing api'
+      add_tags: [versioning]

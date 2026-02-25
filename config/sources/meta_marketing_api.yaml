@@ -1,0 +1,16 @@
+source_id: meta_marketing_api
+platform: meta
+surface: api
+strategy: html_list
+request:
+  url: https://developers.facebook.com/docs/marketing-api/marketing-api-changelog/
+parse:
+  list_selector: main h2, main h3
+  link_selector: a
+  date_regex: '(?i)(20\\d{2})'
+rate_limit:
+  min_seconds_between_fetches: 3600
+  max_items_per_run: 20
+cursor:
+  type: published_at
+tags: [versioning, deprecation]
