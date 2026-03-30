@@ -44,15 +44,21 @@ export function EventDetail({ eventId }: EventDetailProps) {
   const api = apiBase();
 
   useEffect(() => {
-    if (!eventId) {
+    const effectiveEventId =
+      eventId || new URLSearchParams(window.location.search).get('id') || '';
+
+    if (!effectiveEventId) {
       setError('No event ID provided');
       setIsLoading(false);
       return;
     }
 
+    setError(null);
+    setIsLoading(true);
+
     const fetchEvent = async () => {
       try {
-        const res = await fetch(`${api}/api/events/${encodeURIComponent(eventId)}`);
+        const res = await fetch(`${api}/api/events/${encodeURIComponent(effectiveEventId)}`);
         if (!res.ok) throw new Error('not_found');
         const data = await res.json();
         setEvent(data);
