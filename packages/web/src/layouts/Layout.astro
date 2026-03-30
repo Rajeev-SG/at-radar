@@ -1,0 +1,75 @@
+---
+import type { UiConfig } from '../lib/config';
+import '../styles/globals.css';
+
+interface Props {
+  title: string;
+  ui: UiConfig;
+}
+
+const { title, ui } = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={ui.brand.subtitle} />
+    <style is:global>
+      :root {
+        --bg: #f4f2eb;
+        --paper: #fffaf0;
+        --ink: #17202a;
+        --muted: #5f6b76;
+        --line: #d7d0bf;
+        --accent: #b34317;
+        --accent-2: #0f5e6e;
+        --ok: #2f7b4a;
+        --warn: #8f5b0a;
+        --high: #9f2d20;
+      }
+      body {
+        background:
+          radial-gradient(circle at 8% 10%, rgba(179,67,23,0.08), transparent 35%),
+          radial-gradient(circle at 90% 12%, rgba(15,94,110,0.08), transparent 40%),
+          linear-gradient(180deg, #f7f4ec 0%, #f1ede2 100%);
+        min-height: 100vh;
+      }
+    </style>
+  </head>
+  <body class="antialiased">
+    <div class="max-w-6xl mx-auto px-4 py-6">
+      <header class="radar-masthead mb-6">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div>
+            <h1 class="text-3xl md:text-4xl font-bold tracking-tight text-foreground">
+              {ui.brand.title}
+            </h1>
+            <p class="text-muted-foreground mt-1">{ui.brand.subtitle}</p>
+          </div>
+          <nav class="flex flex-wrap gap-2">
+            {ui.pages.map((p) => (
+              <a
+                href={p.path}
+                class="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium
+                       border border-border bg-white
+                       hover:border-primary hover:text-primary
+                       transition-colors"
+              >
+                {p.label}
+              </a>
+            ))}
+          </nav>
+        </div>
+      </header>
+      <main>
+        <slot />
+      </main>
+      <footer class="mt-12 py-6 border-t border-border text-center text-sm text-muted-foreground">
+        <p>AdTech Change Radar — Monitoring platform updates across the ad ecosystem</p>
+      </footer>
+    </div>
+  </body>
+</html>

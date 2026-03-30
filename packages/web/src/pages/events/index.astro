@@ -1,0 +1,14 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { EventDetail } from '../../components/EventDetail';
+import { getUiConfig } from '../../lib/config';
+
+const ui = getUiConfig();
+const eventId = Astro.url.searchParams.get('id') ?? '';
+---
+
+<Layout title={`Event Detail | ${ui.brand.title}`} ui={ui}>
+  <div class="animate-in fade-in duration-300">
+    <EventDetail eventId={eventId} client:load />
+  </div>
+</Layout>

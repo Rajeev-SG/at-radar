@@ -4,6 +4,7 @@ import { healthResponse } from './health';
 import type { D1Like } from '../types';
 import type { IngestEnv } from '../ingest/engine';
 import { runIngestion } from '../ingest/engine';
+import { enrichEvent } from '../enrich/article';
 
 function unauthorized(): Response {
   return Response.json({ error: 'unauthorized' }, { status: 401 });

@@ -1,9 +1,14 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
-import TimelineShell from '../components/TimelineShell.astro';
+import Layout from '../layouts/Layout.astro';
+import { Timeline } from '../components/Timeline';
 import { getUiConfig } from '../lib/config';
+
 const ui = getUiConfig();
+const preset = Astro.url.searchParams.get('preset') ?? undefined;
 ---
-<BaseLayout title="AdTech Change Radar" ui={ui}>
-  <TimelineShell />
-</BaseLayout>
+
+<Layout title="AdTech Change Radar" ui={ui}>
+  <div class="animate-in fade-in duration-300">
+    <Timeline preset={preset} client:load />
+  </div>
+</Layout>

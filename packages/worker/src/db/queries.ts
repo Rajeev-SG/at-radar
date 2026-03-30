@@ -300,6 +300,7 @@ export async function getEventById(db: D1Like, eventId: string) {
   const artifact = row.artifact_id
     ? await db.prepare(`SELECT * FROM fetch_artifacts WHERE artifact_id = ?`).bind(row.artifact_id).first<any>()
     : null;
+  const enriched = await db.prepare(`SELECT what_changed, so_what, why_it_matters, generated_at, model_used FROM enriched_articles WHERE event_id = ? AND error_message IS NULL`).bind(eventId).first<any>();
   return {
     ...row,
     published_at_inferred: Boolean(row.published_at_inferred),
@@ -313,6 +314,13 @@ export async function getEventById(db: D1Like, eventId: string) {
           headers: artifact.headers_json ? JSON.parse(artifact.headers_json) : {},
         }
       : null,
+    enriched_article: enriched ? {
+      what_changed: enriched.what_changed,
+      so_what: enriched.so_what,
+      why_it_matters: enriched.why_it_matters,
+      generated_at: enriched.generated_at,
+      model_used: enriched.model_used,
+    } : null,
   };
 }
 

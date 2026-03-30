@@ -1,0 +1,99 @@
+@import "tailwindcss";
+
+@plugin "tailwindcss-animate";
+
+@custom-variant dark (&:is(.dark *));
+
+/* Warm Beige/Sepia Theme matching original at-radar */
+@theme {
+  --color-background: #f4f2eb;
+  --color-foreground: #17202a;
+
+  --color-card: #fffaf0;
+  --color-card-foreground: #17202a;
+
+  --color-popover: #fffaf0;
+  --color-popover-foreground: #17202a;
+
+  --color-primary: #b34317;
+  --color-primary-foreground: #ffffff;
+
+  --color-secondary: #f4f2eb;
+  --color-secondary-foreground: #17202a;
+
+  --color-muted: #f4f2eb;
+  --color-muted-foreground: #5f6b76;
+
+  --color-accent: #0f5e6e;
+  --color-accent-foreground: #ffffff;
+
+  --color-destructive: #9f2d20;
+  --color-destructive-foreground: #ffffff;
+
+  --color-border: #d7d0bf;
+  --color-input: #d7d0bf;
+  --color-ring: #b34317;
+
+  --radius-lg: var(--radius);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 4px);
+
+  --font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-serif: Georgia, 'Iowan Old Style', 'Times New Roman', serif;
+}
+
+:root {
+  --radius: 0.875rem;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-family: var(--font-serif);
+  }
+}
+
+/* Custom components matching original design */
+@layer components {
+  .radar-masthead {
+    @apply border border-border rounded-2xl p-4 md:p-6 shadow-sm;
+    background: color-mix(in srgb, #fffaf0 92%, white);
+  }
+
+  .radar-card {
+    @apply border border-border rounded-xl p-4 bg-white transition-all duration-200;
+  }
+
+  .radar-card:hover {
+    @apply -translate-y-0.5 shadow-md;
+  }
+
+  .radar-panel {
+    @apply bg-white/80 border border-border rounded-2xl p-4 backdrop-blur-sm;
+  }
+
+  .tag {
+    @apply border border-border rounded-full px-2 py-0.5 text-xs font-medium;
+    background: #fcfbf7;
+  }
+
+  .sev-high {
+    @apply border-red-300/30 bg-red-50/5 text-red-700;
+  }
+
+  .sev-medium {
+    @apply border-amber-700/25 bg-amber-50/5 text-amber-700;
+  }
+
+  .sev-low {
+    @apply border-green-700/25 bg-green-50/5 text-green-700;
+  }
+}
+
+/* Diff display */
+.diff-pre {
+  @apply whitespace-pre-wrap bg-slate-900 text-slate-100 rounded-xl p-4 text-sm overflow-auto;
+}
