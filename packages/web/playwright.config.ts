@@ -1,12 +1,14 @@
 import { defineConfig } from '@playwright/test';
 
+const isCI = !!process.env.CI;
+
 export default defineConfig({
   testDir: './test/e2e',
   use: {
-    baseURL: 'http://127.0.0.1:4321',
+    baseURL: isCI ? 'https://d95ab9e8.adtech-change-radar.pages.dev' : 'http://127.0.0.1:4321',
     headless: true,
   },
-  webServer: [
+  webServer: isCI ? undefined : [
     {
       command: 'cd ../.. && npm run dev:local -w packages/worker',
       url: 'http://127.0.0.1:8787/api/health',
