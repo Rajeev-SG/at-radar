@@ -1,8 +1,7 @@
 import { expect, test } from '@playwright/test';
 
 test('timeline loads and API feeds work', async ({ page, request }) => {
-  const isCI = !!process.env.CI;
-  const apiUrl = isCI ? 'https://adtech-change-radar-api.rajeev-sgill.workers.dev' : 'http://127.0.0.1:8787';
+  const apiUrl = process.env.PLAYWRIGHT_API_URL || 'http://127.0.0.1:8787';
 
   // Test main page loads
   await page.goto('/');
