@@ -8,6 +8,7 @@ enabled = true
 
 [vars]
 APP_VERSION = "0.1.0"
+RADAR_ADMIN_TOKEN = "local-dev-token"
 
 [[d1_databases]]
 binding = "DB"
