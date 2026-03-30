@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { handleApiRequest } from '../../src/api/routes';
 import { createTestDb, applyWorkerMigrations } from '../helpers/sqlite';
 import { runIngestion } from '../../src/ingest/engine';
@@ -20,6 +20,10 @@ function fixtureMap() {
     'https://developers.google.com/google-ads/api/docs/client-libs': { bodyText: readFixture('html', 'docs_monitor_google_client_libs.html') }
   } as const;
 }
+
+afterEach(() => {
+  vi.restoreAllMocks();
+});
 
 describe('api routes', () => {
   it('returns events, feeds, and detail', async () => {
@@ -50,5 +54,79 @@ describe('api routes', () => {
 
     const unauthorized = await handleApiRequest(new Request('http://localhost/api/admin/run', { method: 'POST' }), env);
     expect(unauthorized.status).toBe(401);
+  });
+
+  it('batch enriches unenriched events and exposes enriched_article on detail responses', async () => {
+    const db = createTestDb();
+    applyWorkerMigrations(db);
+    const env = {
+      DB: db,
+      APP_VERSION: 'test',
+      RADAR_ADMIN_TOKEN: 'secret',
+      OPENROUTER_API_KEY: 'openrouter-test-key',
+    } as any;
+    await runIngestion(env, { config: getConfigBundle(), httpClient: new FixtureHttpClient(fixtureMap() as any), triggerType: 'test' });
+
+    vi.spyOn(globalThis, 'fetch').mockResolvedValue(
+      new Response(
+        JSON.stringify({
+          id: 'mock-response',
+          choices: [
+            {
+              finish_reason: 'stop',
+              message: {
+                role: 'assistant',
+                content: `===WHAT_CHANGED===
+Mocked change summary.
+
+===SO_WHAT===
+Mocked impact summary.
+
+===WHY_IT_MATTERS===
+Mocked strategic summary.`,
+              },
+            },
+          ],
+        }),
+        {
+          status: 200,
+          headers: { 'content-type': 'application/json' },
+        },
+      ),
+    );
+
+    const enrichRes = await handleApiRequest(
+      new Request('http://localhost/api/admin/enrich-all', {
+        method: 'POST',
+        headers: {
+          authorization: 'Bearer secret',
+          'content-type': 'application/json',
+        },
+        body: JSON.stringify({ limit: 1, batch_size: 1, backoff_base_ms: 1 }),
+      }),
+      env,
+    );
+    expect(enrichRes.status).toBe(200);
+    const enrichJson = await enrichRes.json() as any;
+    expect(enrichJson).toMatchObject({
+      processed: 1,
+      succeeded: 1,
+      failed: 0,
+    });
+    expect(enrichJson.errors).toEqual([]);
+
+    const eventsRes = await handleApiRequest(new Request('http://localhost/api/events?limit=1'), env);
+    const eventsJson = await eventsRes.json() as any;
+    const detailRes = await handleApiRequest(
+      new Request(`http://localhost/api/events/${eventsJson.items[0].event_id}`),
+      env,
+    );
+    expect(detailRes.status).toBe(200);
+    const detailJson = await detailRes.json() as any;
+    expect(detailJson.enriched_article).toMatchObject({
+      what_changed: 'Mocked change summary.',
+      so_what: 'Mocked impact summary.',
+      why_it_matters: 'Mocked strategic summary.',
+    });
   });
 });

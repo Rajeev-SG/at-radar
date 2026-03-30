@@ -204,6 +204,40 @@ export interface EventFilters {
   cursor?: string | null;
 }
 
+export interface EventForEnrichment {
+  event_id: string;
+  source_id: string;
+  platform: string;
+  event_type: string;
+  title: string;
+  summary: string;
+  raw_excerpt: string;
+}
+
+export async function listUnenrichedEvents(db: D1Like, limit: number): Promise<EventForEnrichment[]> {
+  const safeLimit = Math.min(Math.max(limit, 1), 100);
+  return (
+    await db
+      .prepare(`
+        SELECT
+          e.event_id,
+          e.source_id,
+          e.platform,
+          e.event_type,
+          e.title,
+          e.summary,
+          e.raw_excerpt
+        FROM change_events e
+        LEFT JOIN enriched_articles ea ON ea.event_id = e.event_id
+        WHERE ea.event_id IS NULL
+        ORDER BY e.published_at DESC, e.event_id DESC
+        LIMIT ?
+      `)
+      .bind(safeLimit)
+      .all<EventForEnrichment>()
+  ).results;
+}
+
 export async function listEvents(db: D1Like, filters: EventFilters) {
   const where: string[] = [];
   const values: unknown[] = [];

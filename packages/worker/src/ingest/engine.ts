@@ -22,6 +22,7 @@ import { nowIso, sha256Hex } from '../util';
 export interface IngestEnv {
   DB: D1Like;
   RADAR_ADMIN_TOKEN?: string;
+  OPENROUTER_API_KEY?: string;
   APP_VERSION?: string;
 }
 
