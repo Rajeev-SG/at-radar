@@ -8,6 +8,17 @@ export interface EnrichedArticle {
   model_used?: string;
 }
 
+export class OpenRouterApiError extends Error {
+  constructor(
+    message: string,
+    readonly status: number,
+    readonly retryAfterMs?: number,
+  ) {
+    super(message);
+    this.name = 'OpenRouterApiError';
+  }
+}
+
 interface OpenRouterResponse {
   id: string;
   choices: Array<{
@@ -31,6 +42,20 @@ interface RawEventData {
   platform: string;
   event_type: string;
   source_id: string;
+}
+
+function parseRetryAfterMs(retryAfter: string | null): number | undefined {
+  if (!retryAfter) return undefined;
+
+  const seconds = Number(retryAfter);
+  if (Number.isFinite(seconds) && seconds >= 0) {
+    return seconds * 1000;
+  }
+
+  const asDate = Date.parse(retryAfter);
+  if (Number.isNaN(asDate)) return undefined;
+
+  return Math.max(0, asDate - Date.now());
 }
 
 const PROMPT_TEMPLATE = `You are an expert AdTech analyst. Analyze the following platform change and provide a structured breakdown in three sections.
@@ -66,13 +91,19 @@ export function buildPrompt(event: RawEventData): string {
 }
 
 export function parseArticleResponse(content: string): EnrichedArticle {
-  const whatMatch = content.match(/===WHAT_CHANGED===\s*([\s\S]*?)(?===SO_WHAT===|$)/);
-  const soWhatMatch = content.match(/===SO_WHAT===\s*([\s\S]*?)(?===WHY_IT_MATTERS===|$)/);
-  const whyMatch = content.match(/===WHY_IT_MATTERS===\s*([\s\S]*?)(?=$)/);
+  const extractSection = (startMarker: string, endMarker?: string): string => {
+    const startIndex = content.indexOf(startMarker);
+    if (startIndex === -1) return '';
 
-  const what_changed = whatMatch?.[1]?.trim() || '';
-  const so_what = soWhatMatch?.[1]?.trim() || '';
-  const why_it_matters = whyMatch?.[1]?.trim() || '';
+    const bodyStart = startIndex + startMarker.length;
+    const endIndex = endMarker ? content.indexOf(endMarker, bodyStart) : -1;
+    const section = endIndex === -1 ? content.slice(bodyStart) : content.slice(bodyStart, endIndex);
+    return section.trim();
+  };
+
+  const what_changed = extractSection('===WHAT_CHANGED===', '===SO_WHAT===');
+  const so_what = extractSection('===SO_WHAT===', '===WHY_IT_MATTERS===');
+  const why_it_matters = extractSection('===WHY_IT_MATTERS===');
 
   return {
     what_changed,
@@ -112,7 +143,11 @@ export async function generateArticleWithOpenRouter(
 
   if (!response.ok) {
     const error = await response.text();
-    throw new Error(`OpenRouter API error: ${response.status} - ${error}`);
+    throw new OpenRouterApiError(
+      `OpenRouter API error: ${response.status} - ${error}`,
+      response.status,
+      parseRetryAfterMs(response.headers.get('retry-after')),
+    );
   }
 
   const data: OpenRouterResponse = await response.json();
@@ -139,7 +174,13 @@ export async function getCachedArticle(
       WHERE event_id = ? AND error_message IS NULL
     `)
     .bind(eventId)
-    .first();
+    .first<{
+      what_changed: string;
+      so_what: string;
+      why_it_matters: string;
+      generated_at: string;
+      model_used?: string | null;
+    }>();
 
   if (!result) return null;
 
