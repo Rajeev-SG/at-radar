@@ -250,40 +250,41 @@ export function Timeline({ preset }: TimelineProps) {
           </Card>
         ) : (
           events.map((event) => (
-            <Card key={event.event_id} className="radar-card">
-              <CardContent className="p-4">
-                <div className="flex flex-wrap gap-2 text-xs text-muted-foreground mb-2">
-                  <span>{new Date(event.published_at).toLocaleString()}</span>
-                  <span>•</span>
-                  <span>{event.platform}</span>
-                  <span>•</span>
-                  <span className="capitalize">{event.event_type.replace('_', ' ')}</span>
-                </div>
-                <h3 className="text-lg font-medium mb-2">
-                  <a
-                    href={`/events?id=${encodeURIComponent(event.event_id)}`}
-                    className="hover:text-primary hover:underline"
-                  >
+            <a
+              key={event.event_id}
+              href={`/events?id=${encodeURIComponent(event.event_id)}`}
+              className="block"
+            >
+              <Card className="radar-card hover:border-primary hover:shadow-md transition-all cursor-pointer">
+                <CardContent className="p-4">
+                  <div className="flex flex-wrap gap-2 text-xs text-muted-foreground mb-2">
+                    <span>{new Date(event.published_at).toLocaleString()}</span>
+                    <span>•</span>
+                    <span>{event.platform}</span>
+                    <span>•</span>
+                    <span className="capitalize">{event.event_type.replace('_', ' ')}</span>
+                  </div>
+                  <h3 className="text-lg font-medium mb-2">
                     {event.title}
-                  </a>
-                </h3>
-                <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
-                  {event.summary}
-                </p>
-                <div className="flex flex-wrap gap-1.5">
-                  {(event.labels || []).map((label) => (
-                    <Badge key={label} variant="outline">
-                      {label}
-                    </Badge>
-                  ))}
-                  {event.severity && (
-                    <Badge variant={getSeverityBadgeVariant(event.severity)}>
-                      {event.severity}
-                    </Badge>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
+                  </h3>
+                  <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
+                    {event.summary}
+                  </p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {(event.labels || []).map((label) => (
+                      <Badge key={label} variant="outline">
+                        {label}
+                      </Badge>
+                    ))}
+                    {event.severity && (
+                      <Badge variant={getSeverityBadgeVariant(event.severity)}>
+                        {event.severity}
+                      </Badge>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            </a>
           ))
         )}
       </div>

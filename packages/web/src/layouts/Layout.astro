@@ -44,9 +44,11 @@ const { title, ui } = Astro.props;
       <header class="radar-masthead mb-6">
         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
-            <h1 class="text-3xl md:text-4xl font-bold tracking-tight text-foreground">
-              {ui.brand.title}
-            </h1>
+            <a href="/" class="hover:text-primary transition-colors">
+              <h1 class="text-3xl md:text-4xl font-bold tracking-tight text-foreground">
+                {ui.brand.title}
+              </h1>
+            </a>
             <p class="text-muted-foreground mt-1">{ui.brand.subtitle}</p>
           </div>
           <nav class="flex flex-wrap gap-2">
