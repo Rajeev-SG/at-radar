@@ -11,4 +11,8 @@ export default defineConfig({
   vite: {
     plugins: [tailwindcss()],
   },
+  server: {
+    // Enable query param handling at runtime when hydrated
+    trailingSlash: 'never',
+  },
 });

@@ -4,11 +4,12 @@ import { EventDetail } from '../../components/EventDetail';
 import { getUiConfig } from '../../lib/config';
 
 const ui = getUiConfig();
-const eventId = Astro.url.searchParams.get('id') ?? '';
+// eventId read from URL client-side in EventDetail component (static site)
+// IMPORTANT: pass explicit null so the component reads from window.location.search
 ---
 
 <Layout title={`Event Detail | ${ui.brand.title}`} ui={ui}>
   <div class="animate-in fade-in duration-300">
-    <EventDetail eventId={eventId} client:load />
+    <EventDetail eventId={null} client:load />
   </div>
 </Layout>

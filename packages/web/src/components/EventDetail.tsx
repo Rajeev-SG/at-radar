@@ -34,7 +34,7 @@ interface Event {
 }
 
 interface EventDetailProps {
-  eventId: string;
+  eventId: string | null;
 }
 
 export function EventDetail({ eventId }: EventDetailProps) {
@@ -128,11 +128,6 @@ export function EventDetail({ eventId }: EventDetailProps) {
                 {event.severity}
               </Badge>
             )}
-          </div>
-
-          <div className="mb-6">
-            <h3 className="text-sm font-medium text-muted-foreground mb-2">Summary</h3>
-            <p className="text-sm">{event.summary}</p>
           </div>
 
           {/* Enriched Article Section */}
